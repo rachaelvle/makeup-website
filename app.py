@@ -24,7 +24,17 @@ class Post(db.Model):
     makeup_list_id = db.Column(db.Integer, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
 
-# STILL NEED LIST AND BAG TABLES
+class List(db.Model):
+   # foreign key to post_id
+   # accesses post_id from Post
+   post_id = db.Column(db.Integer, db.ForeignKey('post.post_id'), primary_key=True)
+   item_name = db.Column(db.String(120), nullable=False, primary_key=True)
+
+
+class Bag(db.Model):
+   user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+   item_name = db.Column(db.String(120), db.ForeignKey('list.item_name'), unique=True, nullable=False)
+
 
 with app.app_context():
     db.create_all()
