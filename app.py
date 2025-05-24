@@ -15,6 +15,8 @@ class User(db.Model):
     __tablename__ = 'user'
     user_id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
+
+    #user can have multiple posts
     posts = db.relationship('Post', backref='author', lazy=True)
 
 class Post(db.Model):
@@ -22,6 +24,8 @@ class Post(db.Model):
     post_id = db.Column(db.Integer, primary_key=True)
     image = db.Column(db.String(120), unique=True, nullable=False)
     makeup_list_id = db.Column(db.Integer, nullable=False)
+
+    # foreign key to user table
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
 
 # STILL NEED LIST AND BAG TABLES

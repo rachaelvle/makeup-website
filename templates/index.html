@@ -3,16 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='navbar.css') }}">
 </head>
 <body>
-    <h2> Create An Account </h2>
-    <form action="/add_user" method="POST">
-        <form>
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="name" required>
-        </form>
-        <button type="submit">Submit</button>
-    
+    <h2> Welcome to our website! </h2>
+    {% include 'navbar.html' %}
 </body>
 </html>
