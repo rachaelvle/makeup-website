@@ -1,8 +1,9 @@
 import os
-from flask import Flask, request, render_template, redirect, url_for
+from flask import Flask, request, render_template, redirect, session, url_for
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
+app.secret_key = 'secret_key'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -51,17 +52,38 @@ def index():
     users = User.query.all()
     return render_template('index.html')
 
-@app.route('/add_user', methods=['POST'])
-def add_user():
-    username = request.form['username']
-    email = request.form['email']
-    password = request.form['password']
-    
-    new_user = User(username=username, email=email, password=password)
-    db.session.add(new_user)
-    db.session.commit()
-    
-    return redirect(url_for('index'))
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        user = User.query.filter_by(username=username).first()
+
+        if not user:
+            # Create a new user
+            user = User(username=username)
+            db.session.add(user)
+            db.session.commit()
+
+        # Set session variables BEFORE redirect
+        session['user_id'] = user.user_id
+        session['username'] = user.username
+
+        return redirect(url_for('home'))
+
+    return render_template('login.html')
+
+@app.route('/home')
+def home():
+    user_id = session.get('user_id')  
+    if user_id:
+        user = User.query.get(user_id)  # Query user by ID
+        if not user:
+            return redirect(url_for('login'))  # User not found, redirect to login
+
+        # Now pass user info to the template
+        return render_template('home.html', username=user.username)
+    return redirect(url_for('login'))
+
 
 if __name__ == '__main__':
     app.run(debug=True)
