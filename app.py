@@ -1,7 +1,7 @@
 import os
 from flask import Flask, request, render_template, redirect, session, url_for
 from flask_sqlalchemy import SQLAlchemy
-from makeup import get_makeup_data, search_by_param
+from makeup import get_makeup_data, search_by_name
 
 app = Flask(__name__)
 app.secret_key = 'secret_key'
@@ -45,6 +45,17 @@ class makeup_Bag(db.Model):
    item_id = db.Column(db.Integer, unique=True, nullable=False)
    makeup_bag_id = db.Column(db.Integer, primary_key=True)
    website_url = db.Column(db.String(120), nullable=False)
+
+def add_to_makeup_bag(user_id, item_id, website_url):
+    makeup_bag_item = makeup_Bag(user_id=user_id, item_id=item_id, website_url=website_url)
+    db.session.add(makeup_bag_item)
+    db.session.commit()
+
+def remove_from_makeup_bag(user_id, item_id):
+    makeup_bag_item = makeup_Bag.query.filter_by(user_id=user_id, item_id=item_id).first()
+    if makeup_bag_item:
+        db.session.delete(makeup_bag_item)
+        db.session.commit()
 
 with app.app_context():
     db.create_all()
