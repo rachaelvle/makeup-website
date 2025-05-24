@@ -12,6 +12,7 @@ db = SQLAlchemy(app)
 # set up virtual environment 
 
 class User(db.Model):
+    __tablename__ = 'user'
     user_id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
 
@@ -19,6 +20,7 @@ class User(db.Model):
     posts = db.relationship('Post', backref='author', lazy=True)
 
 class Post(db.Model):
+    __tablename__ = 'post'
     image = db.Column(db.String(120), unique=True, nullable=False) # string is the url to the image 
     makeup_list_id = db.Column(db.Integer, nullable=False) 
     post_id = db.Column(db.Integer, primary_key=True)
@@ -30,6 +32,7 @@ class Post(db.Model):
 
 
 class List(db.Model):
+   __tablename__ = 'list'
    # foreign key to post_id
    # accesses post_id from Post
    post_id = db.Column(db.Integer, db.ForeignKey('post.post_id'), primary_key=True)
@@ -37,6 +40,7 @@ class List(db.Model):
 
 
 class Bag(db.Model):
+   __tablename__ = 'bag'
    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
    item_name = db.Column(db.String(120), db.ForeignKey('list.item_name'), unique=True, nullable=False)
 
