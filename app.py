@@ -1,6 +1,7 @@
 import os
 from flask import Flask, request, render_template, redirect, session, url_for
 from flask_sqlalchemy import SQLAlchemy
+from makeup import get_makeup_data, search_by_name
 
 app = Flask(__name__)
 app.secret_key = 'secret_key'
@@ -38,11 +39,12 @@ class List(db.Model):
    item_name = db.Column(db.String(120), nullable=False, primary_key=True)
 
 
-class Bag(db.Model):
-   __tablename__ = 'bag'
-   user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
-   item_name = db.Column(db.String(120), db.ForeignKey('list.item_name'), unique=True, nullable=False)
-
+class makeup_Bag(db.Model):
+   __tablename__ = 'makeup_bag'
+   user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False) # connect to the user table 
+   item_id = db.Column(db.Integer, unique=True, nullable=False)
+   makeup_bag_id = db.Column(db.Integer, primary_key=True)
+   website_url = db.Column(db.String(120), nullable=False)
 
 with app.app_context():
     db.create_all()
