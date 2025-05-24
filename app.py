@@ -9,14 +9,15 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-# set up virutal enviroment 
+# set up virtual environment 
 
 class User(db.Model):
     __tablename__ = 'user'
     user_id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
 
-    #user can have multiple posts
+
+    # user can have multiple posts
     posts = db.relationship('Post', backref='author', lazy=True)
 
 class Post(db.Model):
@@ -28,7 +29,19 @@ class Post(db.Model):
     # foreign key to user table
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
 
-# STILL NEED LIST AND BAG TABLES
+class List(db.Model):
+   __tablename__ = 'list'
+   # foreign key to post_id
+   # accesses post_id from Post
+   post_id = db.Column(db.Integer, db.ForeignKey('post.post_id'), primary_key=True)
+   item_name = db.Column(db.String(120), nullable=False, primary_key=True)
+
+
+class Bag(db.Model):
+   __tablename__ = 'bag'
+   user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+   item_name = db.Column(db.String(120), db.ForeignKey('list.item_name'), unique=True, nullable=False)
+
 
 with app.app_context():
     db.create_all()
