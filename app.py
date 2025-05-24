@@ -9,20 +9,25 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-# set up virutal enviroment 
+# set up virtual environment 
 
 class User(db.Model):
-    __tablename__ = 'user'
     user_id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
+
+    # user can have multiple posts
     posts = db.relationship('Post', backref='author', lazy=True)
 
 class Post(db.Model):
-    __tablename__ = 'post'
+    image = db.Column(db.String(120), unique=True, nullable=False) # string is the url to the image 
+    makeup_list_id = db.Column(db.Integer, nullable=False) 
     post_id = db.Column(db.Integer, primary_key=True)
-    image = db.Column(db.String(120), unique=True, nullable=False)
-    makeup_list_id = db.Column(db.Integer, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+
+
+    # foreign key to user 
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+
 
 class List(db.Model):
    # foreign key to post_id
