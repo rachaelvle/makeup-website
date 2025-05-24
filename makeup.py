@@ -15,17 +15,17 @@ def get_makeup_data():
         print("Error: Could not fetch data.")
         return None
     
-def search_by_name(data, name):
-    if data:
-        for item in data:
-            if item['name'].lower() == name.lower():
-                return item
+def search_by_param(data, param):
+    for item in data:
+        if item[param].lower() == param.lower():
+            return item
     return []
+
 
 if __name__ == "__main__":
     # Example usage
     makeup_data = get_makeup_data()
-    lippie = "Lippie Pencil"
-    res = search_by_name(makeup_data, lippie)
+    foundation = "Foundation"
+    res = search_by_param(makeup_data, foundation)
     print(res)
     
