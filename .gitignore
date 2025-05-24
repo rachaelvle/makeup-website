@@ -1,2 +1,4 @@
 /.venv
 /instance
+**/__pycache__
+instance/users.db
