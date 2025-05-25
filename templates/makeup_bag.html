@@ -1,0 +1,43 @@
+<h2>{{ username }}'s Makeup Bag</h2>
+
+<form action="{{ url_for('makeup_bag') }}" method="GET">
+  <input type="text" name="q" placeholder="Search products" value="{{ query }}">
+  <button type="submit">Search</button>
+</form>
+
+
+{% if products %}
+  <h3>Search Results:</h3>
+  <ul>
+    {% for p in products %}
+      <li>
+        <strong>{{ p.name }}</strong> by {{ p.brand }}
+        <br>
+        <a href="{{ p.product_url }}" target="_blank">View Product</a>
+        <br>
+        <img src="{{ p.image_url }}" alt="{{ p.name }}" style="max-height:100px; margin-top:5px;">
+        <form action="{{ url_for('add_to_makeup_bag') }}" method="POST" style="margin-top:5px;">
+        <input type="hidden" name="item_id" value="{{ p.product_id }}">
+        <input type="hidden" name="item_name" value="{{ p.name }}">
+        <input type="hidden" name="website_url" value="{{ p.product_url }}">
+        <input type="hidden" name="query" value="{{ query }}"> <!-- Keep search context -->
+        <button type="submit">Add to Bag</button>
+    </form>
+      </li>
+    {% endfor %}
+  </ul>
+{% elif query %}
+  <p>No products found for "{{ query }}"</p>
+{% endif %}
+
+<h3>Your Bag:</h3>
+<ul>
+  {% for item in items %}
+    <li>
+      {{ item.item_name }} — <a href="{{ item.website_url }}" target="_blank">Link</a>
+      <form action="{{ url_for('remove_from_makeup_bag', item_id=item.item_id) }}" method="POST" style="display:inline;">
+        <button type="submit">Remove</button>
+      </form>
+    </li>
+  {% endfor %}
+</ul>
