@@ -53,6 +53,7 @@ class makeup_Bag(db.Model):
    item_name = db.Column(db.String(120), db.ForeignKey('all_products.name'), nullable=False)  
    makeup_bag_id = db.Column(db.Integer, primary_key=True)
    website_url = db.Column(db.String(120), db.ForeignKey('all_products.product_url'), nullable=False)
+   image_url = db.Column(db.String(120), db.ForeignKey('all_products.image_url'), nullable=False)
 
 
 def load_product_table(): # function to load makeup table into the database so we can use it later 
@@ -166,10 +167,11 @@ def add_to_makeup_bag():
     item_id = request.form['item_id']
     item_name = request.form['item_name']
     website_url = request.form['website_url']
+    image_url = request.form['image_url']
     query = request.form.get('query', '')  # Preserve query if coming from search
 
     try:
-        makeup_bag_item = makeup_Bag(user_id=user_id, item_id=item_id, item_name=item_name, website_url=website_url)
+        makeup_bag_item = makeup_Bag(user_id=user_id, item_id=item_id, item_name=item_name, website_url=website_url, image_url=image_url)
         db.session.add(makeup_bag_item)
         db.session.commit()
     except Exception as e:
