@@ -55,7 +55,7 @@ class makeup_Bag(db.Model):
    website_url = db.Column(db.String(120), db.ForeignKey('all_products.product_url'), nullable=False)
 
 
-def load_product_table():
+def load_product_table(): # function to load makeup table into the database so we can use it later 
     makeup_data = get_makeup_data()
     if makeup_data:
         for product in makeup_data:
@@ -98,22 +98,19 @@ with app.app_context():
 
 @app.route('/')
 def index():
-    users = User.query.all()
     return render_template('index.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
+    if request.method == 'POST': # get user or create user depending on input 
         username = request.form['username']
         user = User.query.filter_by(username=username).first()
 
         if not user:
-            # Create a new user
             user = User(username=username)
             db.session.add(user)
             db.session.commit()
 
-        # Set session variables BEFORE redirect
         session['user_id'] = user.user_id
         session['username'] = user.username
 
@@ -125,9 +122,9 @@ def login():
 def home():
     user_id = session.get('user_id')  
     if user_id:
-        user = User.query.get(user_id)  # Query user by ID
+        user = User.query.get(user_id)  
         if not user:
-            return redirect(url_for('login'))  # User not found, redirect to login
+            return redirect(url_for('login'))  
         
         # retrieve top 20 posts to display on the main page
 
@@ -197,7 +194,7 @@ def remove_from_makeup_bag(item_id):
 @app.route('/logout') # user can logout 
 def logout():
     session.clear()
-    return redirect(url_for('login'))
+    return redirect(url_for('index'))
 
 @app.route('/land')
 def land():
