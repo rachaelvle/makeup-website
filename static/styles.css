@@ -2,7 +2,7 @@ body {
     background-color: #FAF9F9;
     color: #0F0621;
     text-align: center;
-    margin: 0 1.5rem;
+    margin: 0 3rem;
 }
 
 .navbar-innerText {
@@ -10,6 +10,21 @@ body {
     font-weight: 500;
     font-style: italic;
     padding-left: 54px !important;
+}
+
+/* special css for the browsing/main page navbar */
+.main-navbar {
+    list-style-type: none;
+}
+
+li.main-bar {
+  display: inline;
+  padding: 2.7rem 24px;
+  overflow: hidden;
+}
+
+.align-right {
+  float:right; 
 }
 
 .login-card {
