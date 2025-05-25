@@ -29,15 +29,15 @@
         </div>
     </div>
     </nav>
-    <div class="card login-card">
+    <div class="card login-card mx-auto" style="width:50em;">
     <div class="card-body">
-        <h5 class="card-title">Login to Access your LookBook!</h5>
+        <h2 class="card-title">Login to Access your LookBook!</h2>
+        <br>
+        <p>Note: keep track of your unique username! If you do not have an existing account, one will be made for you.</p>
         <form action="/login" method="POST">
-            User: <input type="text" name="username">
-            <div class="form-text">
-            Note: keep track of your unique username! If you do not have an existing account, one will be made for you.
-            </div>
-            <button type="submit">Login</button>
+            <input type="text" class="form-control" name="username" placeholder="Username">
+            <br>
+            <button type="submit" class="btn btn-outline-dark">Login</button>
         </form>
         
     </div>
