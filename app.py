@@ -119,27 +119,14 @@ def home():
         return render_template('home.html', username=user.username)
     return redirect(url_for('login'))
 
-@app.route('/makeup_bag', methods=['GET', 'POST']) # this handles the search and add to bag functionality 
+@app.route('/makeup_bag', methods=['GET'])
 def makeup_bag():
-    user_id = session.get('user_id') 
+    user_id = session.get('user_id')
     if not user_id:
         return redirect(url_for('login'))
 
     query = request.args.get('q', '')
-    print(f"Search query: {query}")
-
-    if request.method == 'POST': # adding to the bag 
-        item_id = request.form['item_id']
-        website_url = request.form['website_url']
-        item_name = request.form['item_name']
-
-        makeup_bag_item = makeup_Bag(user_id=user_id, item_id=item_id, website_url=website_url, item_name=item_name)
-        db.session.add(makeup_bag_item)
-        db.session.commit()
-
-        return redirect(url_for('makeup_bag', q=query) if query else url_for('makeup_bag'))
-
-    products = [] # searching for products 
+    products = []
     if query:
         products = all_Products.query.filter(
             (all_Products.name.ilike(f'%{query}%')) |
@@ -155,6 +142,24 @@ def makeup_bag():
         items=user_items,
         query=query
     )
+
+@app.route('/add_to_bag', methods=['POST'])
+def add_to_makeup_bag():
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('login'))
+
+    item_id = request.form['item_id']
+    item_name = request.form['item_name']
+    website_url = request.form['website_url']
+    query = request.form.get('query', '')  # Preserve query if coming from search
+
+    makeup_bag_item = makeup_Bag(user_id=user_id, item_id=item_id, item_name=item_name, website_url=website_url)
+    db.session.add(makeup_bag_item)
+    db.session.commit()
+
+    return redirect(url_for('makeup_bag', q=query) if query else url_for('makeup_bag'))
+
 
 @app.route('/remove_from_bag/<int:item_id>', methods=['POST']) # this allows user to remove items from their makeup bag
 def remove_from_makeup_bag(item_id):

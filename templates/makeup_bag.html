@@ -16,12 +16,13 @@
         <a href="{{ p.product_url }}" target="_blank">View Product</a>
         <br>
         <img src="{{ p.image_url }}" alt="{{ p.name }}" style="max-height:100px; margin-top:5px;">
-        <form action="{{ url_for('makeup_bag') }}" method="POST" style="margin-top:5px;">
-          <input type="hidden" name="item_name" value="{{ p.name }}">
-          <input type="hidden" name="item_id" value="{{ p.product_id }}">
-          <input type="hidden" name="website_url" value="{{ p.product_url }}">
-          <button type="submit">Add to Bag</button>
-        </form>
+        <form action="{{ url_for('add_to_makeup_bag') }}" method="POST" style="margin-top:5px;">
+        <input type="hidden" name="item_id" value="{{ p.product_id }}">
+        <input type="hidden" name="item_name" value="{{ p.name }}">
+        <input type="hidden" name="website_url" value="{{ p.product_url }}">
+        <input type="hidden" name="query" value="{{ query }}"> <!-- Keep search context -->
+        <button type="submit">Add to Bag</button>
+    </form>
       </li>
     {% endfor %}
   </ul>
