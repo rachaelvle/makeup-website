@@ -239,13 +239,21 @@ def look(post_id) :
     return redirect(url_for('specificLook'))
 
 # for adding fake posts
-@app.route('/test', methods=['POST']) # CREATE
-def add_user():
+@app.route('/test', methods=['POST']) 
+def add_user() :
     name = request.form['title']
     image = request.form['image']
     user = session.get('user_id')
     create_post(user, image, name)
     return redirect(url_for('home'))
+
+# for adding fake lists
+@app.route('/testlist', methods=['POST'])
+def add_list() :
+    item = request.form['item_id']
+    #check 
+    pass
+
     
 if __name__ == '__main__':
     app.run(debug=True)
