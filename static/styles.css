@@ -15,11 +15,14 @@ body {
 /* special css for the browsing/main page navbar */
 .main-navbar {
     list-style-type: none;
+    margin-top: 2.2rem;
+    margin-bottom: 2.6rem;
 }
 
 li.main-bar {
   display: inline;
-  padding: 2.7rem 24px;
+  padding: 2.6rem 24px;
+  padding-left: 0px;
   overflow: hidden;
 }
 
@@ -37,7 +40,8 @@ li.main-bar {
 /* for main page */
 .board-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, 300px);
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: masonry;
   grid-auto-rows: 20px;
   grid-row-gap: 10px;
   grid-column-gap: 16px;
@@ -46,8 +50,9 @@ li.main-bar {
 .post {
   grid-row-end: span 10;
   margin-bottom: 10px;
-  width: 242px;
+  width: 300px;
   height: auto; 
+  border-radius: 25px;
 }
 
 .poppins-thin {
