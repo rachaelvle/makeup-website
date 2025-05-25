@@ -15,7 +15,7 @@
         <li class="poppins-semibold main-bar" style="font-size: 64px;">LookBook</li>
         <li class="main-bar align-right"><i class="fa-regular fa-circle-user fa-xl"></i></li>
         <li class="main-bar align-right">
-            <a href="{{ url_for('makeup_bag') }}">
+            <a href="{{ url_for('makeup_bag') }}" class="link-dark">
                 <i class="fa-solid fa-bag-shopping fa-xl"></i>
             </a>
         </li>
@@ -23,41 +23,22 @@
     </ul>
 
     <!-- for adding fake posts -->
-    <form action="/test" method="POST">
+    <!-- <form action="/test" method="POST">
         title: <input type="text" name="title">
         image: <input type="text" name="image">
         <button type="submit">Add</button>
-    </form>
+    </form> -->
     <div class="max-w-7xl mx-auto">
     <div class="board-grid justify-center mt-6">
         {% for post in posts %}
-        <div class="bg-white rounded-lg shadow-md hover:shadow-lg post" style="grid-row-end: span 8;">
+        <div class="post" style="grid-row-end: span 8;">
             <div class="flex flex-col">
-            <div class="w-full aspect-video">
-                <img class="post" src="{{ post.image }}" alt="Image"></iframe>
-            </div>
-            <div class="text-gray-800 p-2 basis-14">
-            <div class="flex justify-between">
-                <p class="text-md font-bold leading-6 ">{{post.post_title}}</p>
-                <div class="flex items-center justify-between text-sm text-gray-500 space-x-1">
-                <div class="flex gap-1 mt-1">
-                    <span>10</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"></path>
-                    </svg>
-                </div>
-                </div>
+            <img class="post" src="{{ post.image }}" alt="Image"></iframe>
             </div>
         </div>
         {% endfor %}
     </div>
     </div>
-
-    <ul>
-        {% for post in posts %}
-            <li>{{post.post_title}} - {{post.post_id}} - {{post.image}}</li>
-        {% endfor %}
-    </ul>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
     <script src="https://kit.fontawesome.com/17bf1215db.js" crossorigin="anonymous"></script>
