@@ -3,6 +3,13 @@ body {
   font-family: Arial, sans-serif;
 }
 
+.MakeupPic1 {
+  float: left;
+  width: 100px;
+  height: auto;
+  margin: 1rem;
+}
+
 .navbar {
   background-color: gray;
   padding: 1rem 2rem;

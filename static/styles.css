@@ -1,5 +1,5 @@
 body {
-    background-image: linear-gradient(to bottom right, white, pink);
+    background-image: linear-gradient(to bottom, white, pink);
     background-repeat: no-repeat;
     background-attachment: fixed;
     color: #0F0621;
@@ -19,12 +19,14 @@ body {
 /* special css for the browsing/main page navbar */
 .main-navbar {
     list-style-type: none;
+    color: rgb(228, 205, 209);
 }
 
 li.main-bar {
   display: inline;
   padding: 2.7rem 24px;
   overflow: hidden;
+  color: rgb(228, 205, 209);
 }
 
 .align-right {
