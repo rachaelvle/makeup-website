@@ -27,7 +27,7 @@ class Post(db.Model):
     post_id = db.Column(db.Integer, primary_key=True)
     image = db.Column(db.String(120), unique=True, nullable=False)
     makeup_list_id = db.Column(db.Integer, nullable=True)
-    title = db.Column(db.String(80), nullable=True)
+    post_title = db.Column(db.String(80), nullable=True)
 
     # foreign key to user table
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
@@ -60,7 +60,7 @@ def remove_from_makeup_bag(user_id, item_id):
 
 # create, remove, update, and delete posts
 def create_post(user_id, image, post_title) :
-    post = Post(user_id=user_id, image=image, title=post_title)
+    post = Post(user_id=user_id, image=image, post_title=post_title)
     db.session.add(post)
     db.session.commit()
 
@@ -107,14 +107,24 @@ def home():
             return redirect(url_for('login'))  # User not found, redirect to login
         
         # retrieve top 20 posts to display on the main page
+        posts = Post.query.limit(20).all()
 
         # Now pass user info to the template
-        return render_template('home.html', username=user.username)
+        return render_template('home.html', username=user.username, posts=posts)
     return redirect(url_for('login'))
 
 @app.route('/land')
 def land():
     return render_template('index.html')
+
+# for adding fake posts
+""" @app.route('/test', methods=['POST']) # CREATE
+def add_user():
+    name = request.form['title']
+    image = request.form['image']
+    user = session.get('user_id')
+    create_post(user, image, name)
+    return redirect(url_for('home')) """
     
 
 
