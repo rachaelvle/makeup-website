@@ -57,6 +57,8 @@ class makeup_Bag(db.Model):
 
 
 def load_product_table(): # function to load makeup table into the database so we can use it later 
+    if all_Products.query.first() is not None: # if the table is already loaded, do not load again
+        return
     makeup_data = get_makeup_data()
     if makeup_data:
         for product in makeup_data:
@@ -93,7 +95,6 @@ def delete_post(user_id, post_id) :
         db.session.commit()
 
 with app.app_context():
-    db.drop_all()
     db.create_all()
     load_product_table()  # Load makeup data into the database
 
