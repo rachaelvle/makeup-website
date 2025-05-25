@@ -22,10 +22,5 @@ def search_by_param(data, param):
     return []
 
 
-if __name__ == "__main__":
-    # Example usage
-    makeup_data = get_makeup_data()
-    foundation = "Foundation"
-    res = search_by_param(makeup_data, foundation)
-    print(res)
+
     

@@ -1,7 +1,7 @@
 import os
-from flask import Flask, request, render_template, redirect, session, url_for
+from flask import Flask, jsonify, request, render_template, redirect, session, url_for
 from flask_sqlalchemy import SQLAlchemy
-from makeup import get_makeup_data, search_by_name
+from makeup import get_makeup_data, search_by_param
 
 app = Flask(__name__)
 app.secret_key = 'secret_key'
@@ -11,13 +11,11 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-# set up virtual environment 
-
+# table creation
 class User(db.Model):
     __tablename__ = 'user'
     user_id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
-
 
     # user can have multiple posts
     posts = db.relationship('Post', backref='author', lazy=True)
@@ -38,27 +36,51 @@ class List(db.Model):
    post_id = db.Column(db.Integer, db.ForeignKey('post.post_id'), primary_key=True)
    item_name = db.Column(db.String(120), nullable=False, primary_key=True)
 
-
 class makeup_Bag(db.Model):
    __tablename__ = 'makeup_bag'
    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False) # connect to the user table 
    item_id = db.Column(db.Integer, unique=True, nullable=False)
+   item_name = db.Column(db.String(120), nullable=False)  
    makeup_bag_id = db.Column(db.Integer, primary_key=True)
    website_url = db.Column(db.String(120), nullable=False)
 
-def add_to_makeup_bag(user_id, item_id, website_url):
-    makeup_bag_item = makeup_Bag(user_id=user_id, item_id=item_id, website_url=website_url)
-    db.session.add(makeup_bag_item)
-    db.session.commit()
+class all_Products(db.Model):
+    __tablename__ = 'all_products'
+    product_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), nullable=False)
+    brand = db.Column(db.String(120), nullable=False)
+    price = db.Column(db.Float)
+    image_url = db.Column(db.String(120), nullable=False)
+    product_url = db.Column(db.String(120), nullable=False)
 
-def remove_from_makeup_bag(user_id, item_id):
-    makeup_bag_item = makeup_Bag.query.filter_by(user_id=user_id, item_id=item_id).first()
-    if makeup_bag_item:
-        db.session.delete(makeup_bag_item)
+def load_product_table():
+    makeup_data = get_makeup_data()
+    if makeup_data:
+        for product in makeup_data:
+            name = product.get("name")
+            brand = product.get("brand")
+            price = product.get("price")
+            image_url = product.get("image_link")
+            product_url = product.get("product_link")
+
+            if not (name and brand and price and product_url):
+                continue
+
+            new_product = all_Products(
+                name=name,
+                brand=brand,
+                price=price,
+                image_url=image_url,
+                product_url=product_url,
+            )
+            db.session.add(new_product)
+
         db.session.commit()
 
 with app.app_context():
+    db.drop_all()
     db.create_all()
+    load_product_table()  # Load makeup data into the database
 
 @app.route('/')
 def index():
@@ -95,6 +117,62 @@ def home():
 
         # Now pass user info to the template
         return render_template('home.html', username=user.username)
+    return redirect(url_for('login'))
+
+@app.route('/makeup_bag', methods=['GET', 'POST']) # this handles the search and add to bag functionality 
+def makeup_bag():
+    user_id = session.get('user_id') 
+    if not user_id:
+        return redirect(url_for('login'))
+
+    query = request.args.get('q', '')
+    print(f"Search query: {query}")
+
+    if request.method == 'POST': # adding to the bag 
+        item_id = request.form['item_id']
+        website_url = request.form['website_url']
+        item_name = request.form['item_name']
+
+        makeup_bag_item = makeup_Bag(user_id=user_id, item_id=item_id, website_url=website_url, item_name=item_name)
+        db.session.add(makeup_bag_item)
+        db.session.commit()
+
+        return redirect(url_for('makeup_bag', q=query) if query else url_for('makeup_bag'))
+
+    products = [] # searching for products 
+    if query:
+        products = all_Products.query.filter(
+            (all_Products.name.ilike(f'%{query}%')) |
+            (all_Products.brand.ilike(f'%{query}%'))
+        ).all()
+
+    user_items = makeup_Bag.query.filter_by(user_id=user_id).all()
+
+    return render_template(
+        'makeup_bag.html',
+        username=session.get('username'),
+        products=products,
+        items=user_items,
+        query=query
+    )
+
+@app.route('/remove_from_bag/<int:item_id>', methods=['POST']) # this allows user to remove items from their makeup bag
+def remove_from_makeup_bag(item_id):
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('login'))
+
+    makeup_bag_item = makeup_Bag.query.filter_by(user_id=user_id, item_id=item_id).first()
+
+    if makeup_bag_item:
+        db.session.delete(makeup_bag_item)
+        db.session.commit()
+
+    return redirect(url_for('makeup_bag'))
+
+@app.route('/logout') # user can logout 
+def logout():
+    session.clear()
     return redirect(url_for('login'))
 
 
