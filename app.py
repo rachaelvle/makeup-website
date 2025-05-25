@@ -36,14 +36,6 @@ class List(db.Model):
    post_id = db.Column(db.Integer, db.ForeignKey('post.post_id'), primary_key=True)
    item_name = db.Column(db.String(120), nullable=False, primary_key=True)
 
-class makeup_Bag(db.Model):
-   __tablename__ = 'makeup_bag'
-   user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False) # connect to the user table 
-   item_id = db.Column(db.Integer, unique=True, nullable=False)
-   item_name = db.Column(db.String(120), nullable=False)  
-   makeup_bag_id = db.Column(db.Integer, primary_key=True)
-   website_url = db.Column(db.String(120), nullable=False)
-
 class all_Products(db.Model):
     __tablename__ = 'all_products'
     product_id = db.Column(db.Integer, primary_key=True)
@@ -52,6 +44,15 @@ class all_Products(db.Model):
     price = db.Column(db.Float)
     image_url = db.Column(db.String(120), nullable=False)
     product_url = db.Column(db.String(120), nullable=False)
+
+class makeup_Bag(db.Model):
+   __tablename__ = 'makeup_bag'
+   user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False) # connect to the user table 
+   item_id = db.Column(db.Integer, db.ForeignKey('all_products.product_id'), unique=True, nullable=False)  # connect to the all_products table
+   item_name = db.Column(db.String(120), db.ForeignKey('all_products.name'), nullable=False)  
+   makeup_bag_id = db.Column(db.Integer, primary_key=True)
+   website_url = db.Column(db.String(120), db.ForeignKey('all_products.product_url'), nullable=False)
+
 
 def load_product_table():
     makeup_data = get_makeup_data()
@@ -119,7 +120,7 @@ def home():
         return render_template('home.html', username=user.username)
     return redirect(url_for('login'))
 
-@app.route('/makeup_bag', methods=['GET'])
+@app.route('/makeup_bag', methods=['GET']) # this allows user to search for products and view their bag
 def makeup_bag():
     user_id = session.get('user_id')
     if not user_id:
@@ -143,7 +144,7 @@ def makeup_bag():
         query=query
     )
 
-@app.route('/add_to_bag', methods=['POST'])
+@app.route('/add_to_bag', methods=['POST']) # this allows user to add items to their bag 
 def add_to_makeup_bag():
     user_id = session.get('user_id')
     if not user_id:
@@ -154,9 +155,12 @@ def add_to_makeup_bag():
     website_url = request.form['website_url']
     query = request.form.get('query', '')  # Preserve query if coming from search
 
-    makeup_bag_item = makeup_Bag(user_id=user_id, item_id=item_id, item_name=item_name, website_url=website_url)
-    db.session.add(makeup_bag_item)
-    db.session.commit()
+    try:
+        makeup_bag_item = makeup_Bag(user_id=user_id, item_id=item_id, item_name=item_name, website_url=website_url)
+        db.session.add(makeup_bag_item)
+        db.session.commit()
+    except Exception as e:
+        print("There was an error adding the item to the bag.")
 
     return redirect(url_for('makeup_bag', q=query) if query else url_for('makeup_bag'))
 
