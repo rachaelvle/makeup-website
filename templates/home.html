@@ -29,13 +29,15 @@
         <button type="submit">Add</button>
     </form> -->
     <div class="board-grid justify-center mt-6">
-        {% for post in posts %}
-        <div class="post" style="grid-row-end: span 8;">
-            <div class="flex flex-col">
-            <img class="post" src="{{ post.image }}" alt="Image"></iframe>
+        {% if posts %}
+            {% for post in posts %}
+            <div class="post" style="grid-row-end: span 8;">
+                <div class="flex flex-col">
+                <img class="post" src="{{ post.image }}" alt="Image"></iframe>
+                </div>
             </div>
-        </div>
-        {% endfor %}
+            {% endfor %}
+        {% endif %}
     </div>
     </div>
 
