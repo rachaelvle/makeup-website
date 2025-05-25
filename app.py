@@ -24,7 +24,8 @@ class Post(db.Model):
     __tablename__ = 'post'
     post_id = db.Column(db.Integer, primary_key=True)
     image = db.Column(db.String(120), unique=True, nullable=False)
-    makeup_list_id = db.Column(db.Integer, nullable=False)
+    makeup_list_id = db.Column(db.Integer, nullable=True)
+    title = db.Column(db.String(80), nullable=True)
 
     # foreign key to user table
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
@@ -78,6 +79,18 @@ def load_product_table():
 
         db.session.commit()
 
+# create, remove, update, and delete posts
+def create_post(user_id, image, post_title) :
+    post = Post(user_id=user_id, image=image, title=post_title)
+    db.session.add(post)
+    db.session.commit()
+
+def delete_post(user_id, post_id) :
+    post = Post.query.filter_by(post_id=post_id, user_id=user_id)
+    if post :
+        db.session.delete(post)
+        db.session.commit()
+
 with app.app_context():
     db.drop_all()
     db.create_all()
@@ -115,6 +128,8 @@ def home():
         user = User.query.get(user_id)  # Query user by ID
         if not user:
             return redirect(url_for('login'))  # User not found, redirect to login
+        
+        # retrieve top 20 posts to display on the main page
 
         # Now pass user info to the template
         return render_template('home.html', username=user.username)
@@ -184,6 +199,9 @@ def logout():
     session.clear()
     return redirect(url_for('login'))
 
-
+@app.route('/land')
+def land():
+    return render_template('index.html')
+    
 if __name__ == '__main__':
     app.run(debug=True)
