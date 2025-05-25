@@ -53,11 +53,32 @@ li.main-bar {
 .post {
   /*grid-row-end: span 10;*/
   padding:1.2em;
-  margin-bottom: 10px;
-  display:block;
+  margin-bottom: 0;
+  padding-bottom:0;
+  /*display:block;*/
+  display:inline-block;
   width: 300px;
   height: auto; 
   border-radius: 35px;
+  box-sizing: border-box;
+}
+
+.caption {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  gap: 6px;
+  font-weight: 500;
+  padding-top:10px;
+  
+  padding-left:8px;
+  color:#0F0621;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.caption:hover {
+  color: #000;
 }
 
 .poppins-thin {

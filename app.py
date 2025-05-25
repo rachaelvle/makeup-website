@@ -257,7 +257,7 @@ def show_post(post_id):
     return render_template('specificLook.html', post=post, product_list=product_list)
 
 
-'''
+
 # for adding fake posts
 @app.route('/test', methods=['POST']) 
 def add_user() :
@@ -265,7 +265,7 @@ def add_user() :
     image = request.form['image']
     user = session.get('user_id')
     create_post(user, image, name)
-    return redirect(url_for('home'))'''
+    return redirect(url_for('home'))
 
 # for adding fake lists
 @app.route('/testlist', methods=['POST'])
