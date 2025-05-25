@@ -46,6 +46,8 @@ li.main-bar {
 .post {
   grid-row-end: span 10;
   margin-bottom: 10px;
+  width: 242px;
+  height: auto; 
 }
 
 .poppins-thin {
