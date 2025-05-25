@@ -1,5 +1,5 @@
 body {
-    background-image: linear-gradient(to bottom right, white, pink);
+    background-image: linear-gradient(to bottom, white, pink);
     background-repeat: no-repeat;
     background-attachment: fixed;
     color: #0F0621;
@@ -7,6 +7,20 @@ body {
     margin: 0 3rem;
     padding: 0 3rem;
     min-height: 100vh;
+}
+
+button {
+  background-color: #0F0621;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  position: fixed;
+  left: 50%;
+  bottom: 40px;
+  transform: translateX(-50%);
 }
 
 .navbar-innerText {
@@ -19,12 +33,16 @@ body {
 /* special css for the browsing/main page navbar */
 .main-navbar {
     list-style-type: none;
+    margin-top: 2.2rem;
+    margin-bottom: 2.6rem;
 }
 
 li.main-bar {
   display: inline;
-  padding: 2.7rem 24px;
+  padding: 2.6rem 24px;
+  padding-left: 0px;
   overflow: hidden;
+  color: rgb(228, 205, 209);
 }
 
 .align-right {
@@ -40,16 +58,25 @@ li.main-bar {
 
 /* for main page */
 .board-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, 300px);
+  column-count: 5;
+  column-gap: 16px;
+  grid-auto-rows: 20px;
+  /* display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: masonry;
   grid-auto-rows: 20px;
   grid-row-gap: 10px;
-  grid-column-gap: 16px;
+  grid-column-gap: 16px; */
 }
 
 .post {
-  grid-row-end: span 10;
+  /*grid-row-end: span 10;*/
+  padding:1.2em;
   margin-bottom: 10px;
+  display:block;
+  width: 300px;
+  height: auto; 
+  border-radius: 35px;
 }
 
 .poppins-thin {

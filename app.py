@@ -25,7 +25,7 @@ class Post(db.Model):
     post_id = db.Column(db.Integer, primary_key=True)
     image = db.Column(db.String(120), unique=True, nullable=False)
     makeup_list_id = db.Column(db.Integer, nullable=True)
-    title = db.Column(db.String(80), nullable=True)
+    post_title = db.Column(db.String(80), nullable=True)
 
     # foreign key to user table
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
@@ -46,16 +46,28 @@ class all_Products(db.Model):
     image_url = db.Column(db.String(120), nullable=False)
     product_url = db.Column(db.String(120), nullable=False)
 
+class bag_item(db.Model):
+    __tablename__ = 'bag_item'
+    bag_item_id = db.Column(db.Integer, primary_key=True)
+    item_id = db.Column(db.Integer, db.ForeignKey('all_products.product_id'), unique=True, nullable=False)  # connect to the all_products table
+    item_name = db.Column(db.String(120), db.ForeignKey('all_products.name'), nullable=False)  
+    makeup_bag_id = db.Column(db.Integer, db.ForeignKey('makeup_bag.makeup_bag_id'))
+    website_url = db.Column(db.String(120), db.ForeignKey('all_products.product_url'), nullable=False)
+    image_url = db.Column(db.String(120), db.ForeignKey('all_products.image_url'), nullable=False)
+
+    makeup_bag = db.relationship('makeup_Bag', back_populates='items')
+
 class makeup_Bag(db.Model):
    __tablename__ = 'makeup_bag'
-   user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False) # connect to the user table 
-   item_id = db.Column(db.Integer, db.ForeignKey('all_products.product_id'), unique=True, nullable=False)  # connect to the all_products table
-   item_name = db.Column(db.String(120), db.ForeignKey('all_products.name'), nullable=False)  
+   user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False, unique=True) # connect to the user table 
    makeup_bag_id = db.Column(db.Integer, primary_key=True)
-   website_url = db.Column(db.String(120), db.ForeignKey('all_products.product_url'), nullable=False)
 
+   items = db.relationship('bag_item', back_populates='makeup_bag', cascade='all, delete-orphan') #bag can have mutiple items
+    
 
-def load_product_table():
+def load_product_table(): # function to load makeup table into the database so we can use it later 
+    if all_Products.query.first() is not None: # if the table is already loaded, do not load again
+        return
     makeup_data = get_makeup_data()
     if makeup_data:
         for product in makeup_data:
@@ -81,7 +93,7 @@ def load_product_table():
 
 # create, remove, update, and delete posts
 def create_post(user_id, image, post_title) :
-    post = Post(user_id=user_id, image=image, title=post_title)
+    post = Post(user_id=user_id, image=image, post_title=post_title)
     db.session.add(post)
     db.session.commit()
 
@@ -92,28 +104,25 @@ def delete_post(user_id, post_id) :
         db.session.commit()
 
 with app.app_context():
-    #db.drop_all()
+    #db.drop_all() # do once and then delete to reset tables
     db.create_all()
     load_product_table()  # Load makeup data into the database
 
 @app.route('/')
 def index():
-    users = User.query.all()
     return render_template('index.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
+    if request.method == 'POST': # get user or create user depending on input 
         username = request.form['username']
         user = User.query.filter_by(username=username).first()
 
         if not user:
-            # Create a new user
             user = User(username=username)
             db.session.add(user)
             db.session.commit()
 
-        # Set session variables BEFORE redirect
         session['user_id'] = user.user_id
         session['username'] = user.username
 
@@ -125,14 +134,15 @@ def login():
 def home():
     user_id = session.get('user_id')  
     if user_id:
-        user = User.query.get(user_id)  # Query user by ID
+        user = User.query.get(user_id)  
         if not user:
-            return redirect(url_for('login'))  # User not found, redirect to login
+            return redirect(url_for('login'))  
         
         # retrieve top 20 posts to display on the main page
+        posts = Post.query.limit(20).all()
 
         # Now pass user info to the template
-        return render_template('home.html', username=user.username)
+        return render_template('home.html', username=user.username, posts=posts)
     return redirect(url_for('login'))
 
 @app.route('/makeup_bag', methods=['GET']) # this allows user to search for products and view their bag
@@ -149,7 +159,13 @@ def makeup_bag():
             (all_Products.brand.ilike(f'%{query}%'))
         ).all()
 
-    user_items = makeup_Bag.query.filter_by(user_id=user_id).all()
+    bag = makeup_Bag.query.filter_by(user_id=user_id).first() # find the bag, if they don't have one, create it 
+    if not bag: 
+        bag = makeup_Bag(user_id=user_id)
+        db.session.add(bag)
+        db.session.commit()
+
+    user_items = bag.items
 
     return render_template(
         'makeup_bag.html',
@@ -168,11 +184,18 @@ def add_to_makeup_bag():
     item_id = request.form['item_id']
     item_name = request.form['item_name']
     website_url = request.form['website_url']
+    image_url = request.form['image_url']
     query = request.form.get('query', '')  # Preserve query if coming from search
 
     try:
-        makeup_bag_item = makeup_Bag(user_id=user_id, item_id=item_id, item_name=item_name, website_url=website_url)
-        db.session.add(makeup_bag_item)
+        bag = makeup_Bag.query.filter_by(user_id=user_id).first()
+        if not bag:
+            bag = makeup_Bag(user_id=user_id)
+            db.session.add(bag)
+            db.session.commit()
+        
+        new_item = bag_item(makeup_bag_id = bag.makeup_bag_id, item_id=item_id, item_name=item_name, website_url=website_url, image_url=image_url)
+        db.session.add(new_item)
         db.session.commit()
     except Exception as e:
         print("There was an error adding the item to the bag.")
@@ -180,16 +203,20 @@ def add_to_makeup_bag():
     return redirect(url_for('makeup_bag', q=query) if query else url_for('makeup_bag'))
 
 
-@app.route('/remove_from_bag/<int:item_id>', methods=['POST']) # this allows user to remove items from their makeup bag
-def remove_from_makeup_bag(item_id):
+@app.route('/remove_from_bag/<int:bag_item_id>', methods=['POST']) #allow user to remove items from their bag
+def remove_from_makeup_bag(bag_item_id):
     user_id = session.get('user_id')
     if not user_id:
         return redirect(url_for('login'))
+    
+    bag = makeup_Bag.query.filter_by(user_id=user_id).first()
+    if not bag:
+        return redirect(url_for('makeup_bag'))
+    
+    item_to_remove = bag_item.query.filter_by(bag_item_id=bag_item_id, makeup_bag_id=bag.makeup_bag_id).first()
 
-    makeup_bag_item = makeup_Bag.query.filter_by(user_id=user_id, item_id=item_id).first()
-
-    if makeup_bag_item:
-        db.session.delete(makeup_bag_item)
+    if item_to_remove:
+        db.session.delete(item_to_remove)
         db.session.commit()
 
     return redirect(url_for('makeup_bag'))
@@ -197,11 +224,36 @@ def remove_from_makeup_bag(item_id):
 @app.route('/logout') # user can logout 
 def logout():
     session.clear()
-    return redirect(url_for('login'))
+    return redirect(url_for('index'))
 
 @app.route('/land')
 def land():
     return render_template('index.html')
+
+@app.route('/look/<int:post_id>', methods=['GET']) # allow user to view a specific look
+def look(post_id) :
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('login'))
+    post = Post.query.filter_by(post_id=post_id).first()
+    return redirect(url_for('specificLook'))
+
+# for adding fake posts
+@app.route('/test', methods=['POST']) 
+def add_user() :
+    name = request.form['title']
+    image = request.form['image']
+    user = session.get('user_id')
+    create_post(user, image, name)
+    return redirect(url_for('home'))
+
+# for adding fake lists
+@app.route('/testlist', methods=['POST'])
+def add_list() :
+    item = request.form['item_id']
+    #check 
+    pass
+
     
 if __name__ == '__main__':
     app.run(debug=True)
