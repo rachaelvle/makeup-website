@@ -24,18 +24,32 @@ class Post(db.Model):
     __tablename__ = 'post'
     post_id = db.Column(db.Integer, primary_key=True)
     image = db.Column(db.String(120), unique=True, nullable=False)
-    makeup_list_id = db.Column(db.Integer, nullable=True)
     post_title = db.Column(db.String(80), nullable=True)
 
-    # foreign key to user table
+    # foreign key to other tables
+    makeup_list_id = db.relationship('List', backref='post', uselist=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
 
-class List(db.Model):
+class list_item(db.Model): # item in the list for a post
+    __tablename__ = 'list_item'
+    list_id = db.Column(db.Integer, db.ForeignKey('list.list_id'), nullable=False)
+    item_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), nullable=False)
+    brand = db.Column(db.String(120), nullable=False)
+    color = db.Column(db.String(120), nullable=False)
+    picture_url = db.Column(db.String(120), nullable=False)
+    shop_url = db.Column(db.String(120), nullable=False)
+
+    list = db.relationship('List', back_populates='items')
+
+class List(db.Model): # this is the list of items in a post
    __tablename__ = 'list'
    # foreign key to post_id
-   # accesses post_id from Post
-   post_id = db.Column(db.Integer, db.ForeignKey('post.post_id'), primary_key=True)
-   item_name = db.Column(db.String(120), nullable=False, primary_key=True)
+   # accesses post_id from Post   
+   post_id = db.Column(db.Integer, db.ForeignKey('post.post_id'), unique=True)
+   list_id = db.Column(db.Integer, primary_key=True)
+
+   items = db.relationship('list_item', back_populates='list', cascade="all, delete-orphan")
 
 class all_Products(db.Model):
     __tablename__ = 'all_products'
@@ -97,6 +111,10 @@ def create_post(user_id, image, post_title) :
     db.session.add(post)
     db.session.commit()
 
+    makeup_list = List(post_id=post.post_id) # creating a new list for a new post 
+    db.session.add(makeup_list)
+    db.session.commit()
+
 def delete_post(user_id, post_id) :
     post = Post.query.filter_by(post_id=post_id, user_id=user_id)
     if post :
@@ -104,7 +122,7 @@ def delete_post(user_id, post_id) :
         db.session.commit()
 
 with app.app_context():
-    #db.drop_all() # do once and then delete to reset tables
+    db.drop_all()
     db.create_all()
     load_product_table()  # Load makeup data into the database
 
@@ -230,14 +248,16 @@ def logout():
 def land():
     return render_template('index.html')
 
-@app.route('/look/<int:post_id>', methods=['GET']) # allow user to view a specific look
-def look(post_id) :
-    user_id = session.get('user_id')
-    if not user_id:
-        return redirect(url_for('login'))
-    post = Post.query.filter_by(post_id=post_id).first()
-    return redirect(url_for('specificLook'))
+@app.route('/post/<int:post_id>') # this shows a specific post
+def show_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    product_list = None
+    if post.makeup_list_id:
+        product_list = post.makeup_list_id.items  # list of list_item objects
+    return render_template('specificLook.html', post=post, product_list=product_list)
 
+
+'''
 # for adding fake posts
 @app.route('/test', methods=['POST']) # CREATE
 def add_user():
@@ -245,7 +265,9 @@ def add_user():
     image = request.form['image']
     user = session.get('user_id')
     create_post(user, image, name)
-    return redirect(url_for('home'))
+    return redirect(url_for('home')) 
+
+'''
     
 if __name__ == '__main__':
     app.run(debug=True)
