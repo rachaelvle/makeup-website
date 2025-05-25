@@ -71,7 +71,7 @@
           <div class="card-body">
             <h5 class="card-title">{{ item.item_name }}</h5>
             <a href="{{ item.website_url }}" class="btn btn-outline-primary btn-sm" target="_blank">View Product</a>
-            <form action="{{ url_for('remove_from_makeup_bag', item_id=item.item_id) }}" method="POST" class="mt-2">
+            <form action="{{ url_for('remove_from_makeup_bag', bag_item_id=item.bag_item_id) }}" method="POST" class="mt-2">
               <button type="submit" class="btn btn-danger btn-sm">Remove</button>
             </form>
           </div>
