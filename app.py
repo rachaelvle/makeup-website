@@ -104,7 +104,7 @@ def delete_post(user_id, post_id) :
         db.session.commit()
 
 with app.app_context():
-    db.drop_all() # do once and then delete to reset tables
+    #db.drop_all() # do once and then delete to reset tables
     db.create_all()
     load_product_table()  # Load makeup data into the database
 
@@ -230,14 +230,30 @@ def logout():
 def land():
     return render_template('index.html')
 
+@app.route('/look/<int:post_id>', methods=['GET']) # allow user to view a specific look
+def look(post_id) :
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('login'))
+    post = Post.query.filter_by(post_id=post_id).first()
+    return redirect(url_for('specificLook'))
+
 # for adding fake posts
-""" @app.route('/test', methods=['POST']) # CREATE
-def add_user():
+@app.route('/test', methods=['POST']) 
+def add_user() :
     name = request.form['title']
     image = request.form['image']
     user = session.get('user_id')
     create_post(user, image, name)
-    return redirect(url_for('home')) """
+    return redirect(url_for('home'))
+
+# for adding fake lists
+@app.route('/testlist', methods=['POST'])
+def add_list() :
+    item = request.form['item_id']
+    #check 
+    pass
+
     
 if __name__ == '__main__':
     app.run(debug=True)
