@@ -14,7 +14,11 @@
     <ul class="main-navbar">
         <li class="poppins-semibold main-bar" style="font-size: 64px;">LookBook</li>
         <li class="main-bar align-right"><i class="fa-regular fa-circle-user fa-xl"></i></li>
-        <li class="main-bar align-right"><i class="fa-solid fa-bag-shopping fa-xl"></i></li>
+        <li class="main-bar align-right">
+            <a href="{{ url_for('makeup_bag') }}">
+                <i class="fa-solid fa-bag-shopping fa-xl"></i>
+            </a>
+        </li>
         <li class="main-bar align-right"><i class="fa-regular fa-heart fa-xl"></i></li>
     </ul>
 
