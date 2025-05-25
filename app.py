@@ -26,7 +26,8 @@ class Post(db.Model):
     __tablename__ = 'post'
     post_id = db.Column(db.Integer, primary_key=True)
     image = db.Column(db.String(120), unique=True, nullable=False)
-    makeup_list_id = db.Column(db.Integer, nullable=False)
+    makeup_list_id = db.Column(db.Integer, nullable=True)
+    title = db.Column(db.String(80), nullable=True)
 
     # foreign key to user table
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
@@ -55,6 +56,18 @@ def remove_from_makeup_bag(user_id, item_id):
     makeup_bag_item = makeup_Bag.query.filter_by(user_id=user_id, item_id=item_id).first()
     if makeup_bag_item:
         db.session.delete(makeup_bag_item)
+        db.session.commit()
+
+# create, remove, update, and delete posts
+def create_post(user_id, image, post_title) :
+    post = Post(user_id=user_id, image=image, title=post_title)
+    db.session.add(post)
+    db.session.commit()
+
+def delete_post(user_id, post_id) :
+    post = Post.query.filter_by(post_id=post_id, user_id=user_id)
+    if post :
+        db.session.delete(post)
         db.session.commit()
 
 with app.app_context():
