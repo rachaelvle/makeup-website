@@ -1,7 +1,7 @@
 import os
 from flask import Flask, request, render_template, redirect, session, url_for
 from flask_sqlalchemy import SQLAlchemy
-from makeup import get_makeup_data, search_by_name
+from makeup import get_makeup_data, search_by_param
 
 app = Flask(__name__)
 app.secret_key = 'secret_key'
@@ -105,10 +105,17 @@ def home():
         user = User.query.get(user_id)  # Query user by ID
         if not user:
             return redirect(url_for('login'))  # User not found, redirect to login
+        
+        # retrieve top 20 posts to display on the main page
 
         # Now pass user info to the template
         return render_template('home.html', username=user.username)
     return redirect(url_for('login'))
+
+@app.route('/land')
+def land():
+    return render_template('index.html')
+    
 
 
 if __name__ == '__main__':
