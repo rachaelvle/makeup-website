@@ -122,7 +122,7 @@ def delete_post(user_id, post_id) :
         db.session.commit()
 
 with app.app_context():
-    db.drop_all()
+    #db.drop_all()
     db.create_all()
     load_product_table()  # Load makeup data into the database
 
