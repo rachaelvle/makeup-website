@@ -25,7 +25,7 @@ class Post(db.Model):
     post_id = db.Column(db.Integer, primary_key=True)
     image = db.Column(db.String(120), unique=True, nullable=False)
     makeup_list_id = db.Column(db.Integer, nullable=True)
-    title = db.Column(db.String(80), nullable=True)
+    post_title = db.Column(db.String(80), nullable=True)
 
     # foreign key to user table
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
@@ -53,9 +53,12 @@ class makeup_Bag(db.Model):
    item_name = db.Column(db.String(120), db.ForeignKey('all_products.name'), nullable=False)  
    makeup_bag_id = db.Column(db.Integer, primary_key=True)
    website_url = db.Column(db.String(120), db.ForeignKey('all_products.product_url'), nullable=False)
+   image_url = db.Column(db.String(120), db.ForeignKey('all_products.image_url'), nullable=False)
 
 
-def load_product_table():
+def load_product_table(): # function to load makeup table into the database so we can use it later 
+    if all_Products.query.first() is not None: # if the table is already loaded, do not load again
+        return
     makeup_data = get_makeup_data()
     if makeup_data:
         for product in makeup_data:
@@ -81,7 +84,7 @@ def load_product_table():
 
 # create, remove, update, and delete posts
 def create_post(user_id, image, post_title) :
-    post = Post(user_id=user_id, image=image, title=post_title)
+    post = Post(user_id=user_id, image=image, post_title=post_title)
     db.session.add(post)
     db.session.commit()
 
@@ -92,28 +95,24 @@ def delete_post(user_id, post_id) :
         db.session.commit()
 
 with app.app_context():
-    db.drop_all()
     db.create_all()
     load_product_table()  # Load makeup data into the database
 
 @app.route('/')
 def index():
-    users = User.query.all()
     return render_template('index.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
+    if request.method == 'POST': # get user or create user depending on input 
         username = request.form['username']
         user = User.query.filter_by(username=username).first()
 
         if not user:
-            # Create a new user
             user = User(username=username)
             db.session.add(user)
             db.session.commit()
 
-        # Set session variables BEFORE redirect
         session['user_id'] = user.user_id
         session['username'] = user.username
 
@@ -125,14 +124,15 @@ def login():
 def home():
     user_id = session.get('user_id')  
     if user_id:
-        user = User.query.get(user_id)  # Query user by ID
+        user = User.query.get(user_id)  
         if not user:
-            return redirect(url_for('login'))  # User not found, redirect to login
+            return redirect(url_for('login'))  
         
         # retrieve top 20 posts to display on the main page
+        posts = Post.query.limit(20).all()
 
         # Now pass user info to the template
-        return render_template('home.html', username=user.username)
+        return render_template('home.html', username=user.username, posts=posts)
     return redirect(url_for('login'))
 
 @app.route('/makeup_bag', methods=['GET']) # this allows user to search for products and view their bag
@@ -168,10 +168,11 @@ def add_to_makeup_bag():
     item_id = request.form['item_id']
     item_name = request.form['item_name']
     website_url = request.form['website_url']
+    image_url = request.form['image_url']
     query = request.form.get('query', '')  # Preserve query if coming from search
 
     try:
-        makeup_bag_item = makeup_Bag(user_id=user_id, item_id=item_id, item_name=item_name, website_url=website_url)
+        makeup_bag_item = makeup_Bag(user_id=user_id, item_id=item_id, item_name=item_name, website_url=website_url, image_url=image_url)
         db.session.add(makeup_bag_item)
         db.session.commit()
     except Exception as e:
@@ -197,11 +198,20 @@ def remove_from_makeup_bag(item_id):
 @app.route('/logout') # user can logout 
 def logout():
     session.clear()
-    return redirect(url_for('login'))
+    return redirect(url_for('index'))
 
 @app.route('/land')
 def land():
     return render_template('index.html')
+
+# for adding fake posts
+""" @app.route('/test', methods=['POST']) # CREATE
+def add_user():
+    name = request.form['title']
+    image = request.form['image']
+    user = session.get('user_id')
+    create_post(user, image, name)
+    return redirect(url_for('home')) """
     
 if __name__ == '__main__':
     app.run(debug=True)
