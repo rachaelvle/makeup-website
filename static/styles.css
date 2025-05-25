@@ -30,6 +30,10 @@ li.main-bar {
   float:right; 
 }
 
+.list-group-flush .list-group-item {
+  border: none;
+}
+
 .login-card {
     font-family: "Poppins", sans-serif;
     font-weight: 500;
@@ -52,7 +56,7 @@ li.main-bar {
 
 .post {
   /*grid-row-end: span 10;*/
-  padding:1.2em;
+  padding:1em;
   margin-bottom: 0;
   padding-bottom:0;
   /*display:block;*/
@@ -79,6 +83,14 @@ li.main-bar {
 
 .caption:hover {
   color: #000;
+}
+
+.specific-post-img {
+  border-radius: 35px;
+  width: 500px;
+  height: auto;
+  margin-left: auto; 
+  margin-right: 2rem;
 }
 
 .poppins-thin {
