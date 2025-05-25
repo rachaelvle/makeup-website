@@ -31,19 +31,73 @@
     </div>
     </nav>
 
-    <h2>Welcome to <strong>LookBook</strong>, where you can find your next look!</h2>
-    <div class="poppins-medium" style="font-size: 20px; margin: 20px;">
-    Discover makeup that fits your style. </div>
+    <div class="hero">
+        <div class="row">
+            <div class="col poppins-medium">
+                <h1 style="text-align: left;">Welcome to <strong>LookBook</strong>, where you can find your next look!</h1>
+                <div style="font-size: 30px; text-align: left;">
+                    Discover makeup that fits your style. 
+                </div>
+                <br>
+                <!-- window.location.href -->
+                <button class="btn btn-outline-dark btn-lg" onclick="window.location.href='/login'">Get Started!</button>
+            </div>
+            <div class="col" style="max-width:250px;">
+                <br>
+            </div>
+            <div class="col" style="max-width:400px; height:400px;">
+                <div id="carouselExampleRide" class="carousel slide" data-bs-ride="true">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                        <img src="static\makeup_look_homepage.jpg" class="post" alt="...">
+                        </div>
+                        <div class="carousel-item">
+                        <img src="static\makeup_pic.jpg" class="post" alt="...">
+                        </div>
+                        <div class="carousel-item">
+                        <img src="static\makeup_pic_2.jpg" class="post" alt="...">
+                        </div>
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleRide" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleRide" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <!-- <img src="/static/makeup_pic.jpg" alt="MakeupPic1" width="200" height="350" align="left"> -->
-    <img src="/static/makeup_pic.jpg" alt="Left image" class="side-image left-image" width="250" height="350" align="top">
-    <img src="/static/makeup_look_homepage.jpg" alt="Center image" class="center-image" width="250" height="250" align="middle">
-    <img src="/static/makeup_pic_2.jpg" alt="Right image" class="side-image right-image" width="250" height="350" align="bottom">
+    <div class="container-fluid" id="About">
+        <div class="gradient-section" style="padding:10em;">
+            <div class="row">
+                <div class="col" style="text-align: left;">
+                    <p>Find Inspo Quickly and Easily!</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col" style="text-align: right;">
+                    <p>Keep Lists of All Your Favorite Products!</p>
+                </div>
+            </div>
+            <br>
+            <br>
+            <div class="row">
+                <div class="col" >
+                    <p>A Space for you to Express Yourself However you Want!</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <!-- window.location.href -->
-    <button onclick="window.location.href='/login'">Get Started!</button>
-
-    
+    <div id="Contact" class="poppins-medium" style="margin:8em; padding:auto;">
+        <p>Made with love by Naz Atalay, Rachael Le, Renee Tran, and Sreenidhi Challagundla!</p>
+        <p>❤︎</p>
+        <p>Venus Hacks 2025</p>
+    </div>
         
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
 </body>

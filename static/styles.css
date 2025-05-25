@@ -12,6 +12,30 @@ body {
     padding-left: 54px !important;
 }
 
+/* landing page classes */
+.gradient-section {
+  background: url("/static/mesh-759.png") no-repeat !important;
+  background-size: cover !important;
+  overflow: hidden;
+  width:100%;
+  height:100%;
+  margin:0 0 0 0 !important;
+}
+
+.gradient-section p {
+  margin: 2rem 0;
+  font-size: 1.3rem;
+  color:#FAF9F9;
+  font-size: 36px;
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.hero {
+  margin:10em;
+}
+
 /* special css for the browsing/main page navbar */
 .main-navbar {
     list-style-type: none;
