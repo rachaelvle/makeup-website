@@ -2,4 +2,8 @@
 /instance
 **/__pycache__
 instance/users.db
+<<<<<<< HEAD
 /venv
+=======
+/venv
+>>>>>>> f917464262875d08089a5b5da692b955d23a7790
